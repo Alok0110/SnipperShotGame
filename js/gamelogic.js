@@ -119,11 +119,13 @@
       })();
 
 
+      // Begining of the background function ==>
       var background = (function(){
         
         var bg3 = {},bg1 ={}, bg2={}, bg4={};
-        this.left = false;
-        this.right = false;
+        this.leftBtn = false;
+        this.rightBtn = false;
+        this.isRunning = false;
         
         this.draw = function() {
             ctx.drawImage(assetLoader.imgs.bg, 0, 0, 384, 216, 0, 0, 600, 360);
@@ -133,14 +135,14 @@
             //ctx.drawImage(assetLoader.imgs.bg4, 0, 0, 384, 216, 0, 0, 300, 150);
 
             //pan background
-            if( this.right === true ) {
+            if( this.rightBtn === true ) {
                 bg1.x -= bg1.speed;
                 bg2.x -= bg2.speed;
                 bg3.x -= bg3.speed;
                 bg4.x -= bg4.speed;
             }
 
-            if( this.left === true ) {
+            if( this.leftBtn === true ) {
                 bg1.x += bg1.speed;
                 bg2.x += bg2.speed;
                 bg3.x += bg3.speed;
@@ -149,94 +151,135 @@
             
         
             ctx.drawImage(assetLoader.imgs.bg1, bg1.x, bg1.y);
-            if( this.right === true ) {
+            if( this.rightBtn === true ) {
                 
-                ctx.drawImage(assetLoader.imgs.bg1, bg1.x + canvas.width, bg1.y);
+                if( (bg1.x - assetLoader.imgs.bg1.width) < -88 && (bg1.x + assetLoader.imgs.bg1.width) > 300 )  {
 
-                if( (bg1.x + canvas.width) < -1 ) {
-                    ctx.drawImage(assetLoader.imgs.bg1, bg1.x + canvas.width, bg1.y);
-                } else {
-                    ctx.drawImage(assetLoader.imgs.bg1, bg1.x - canvas.width, bg1.y);
-                }
-
-            }
-            if( this.left === true ) {
-
-                if( (bg1.x + canvas.width) < 0 ) {
                     ctx.drawImage(assetLoader.imgs.bg1, bg1.x - canvas.width, bg1.y);
                 }
                 else {
+                    
+                    ctx.drawImage(assetLoader.imgs.bg1, bg1.x + canvas.width, bg1.y); //true
+
+                }
+
+
+            }
+            if( this.leftBtn === true ) {
+                if( (bg1.x + assetLoader.imgs.bg1.width) < 300  ) {
+                    //console.log("inside 1");
                     ctx.drawImage(assetLoader.imgs.bg1, bg1.x + canvas.width, bg1.y);
                 }
+                else {
+                    //console.log("inside 2");
+                    ctx.drawImage(assetLoader.imgs.bg1, bg1.x - canvas.width, bg1.y);
+                }
             }
+
 
             ctx.drawImage(assetLoader.imgs.bg2, bg2.x, bg2.y);
-            if( this.right === true ) {
+            if( this.rightBtn === true ) {
                 
-                ctx.drawImage(assetLoader.imgs.bg2, bg2.x + canvas.width, bg2.y);
+                if( (bg2.x - assetLoader.imgs.bg2.width) < -88 && (bg2.x + assetLoader.imgs.bg2.width) > 300 )  {
 
-                if( (bg2.x + canvas.width) < -1 ) {
-                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x + canvas.width, bg2.y);
-                } else {
-                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x - canvas.width, bg2.y);
-                }
-
-            }
-            if( this.left === true ) {
-                ctx.drawImage(assetLoader.imgs.bg2, bg2.x - canvas.width, bg2.y);
-
-                if( (bg2.x + canvas.width) < 0 ) {
                     ctx.drawImage(assetLoader.imgs.bg2, bg2.x - canvas.width, bg2.y);
                 }
                 else {
-                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x + canvas.width, bg2.y);
+                    
+                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x + canvas.width, bg2.y); //true
+
                 }
 
             }
+            if( this.leftBtn === true ) {
+                if( (bg2.x + assetLoader.imgs.bg2.width) < 300  ) {
+                    //console.log("inside 1");
+                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x + canvas.width, bg2.y);
+                }
+                else {
+                    //console.log("inside 2");
+                    ctx.drawImage(assetLoader.imgs.bg2, bg2.x - canvas.width, bg2.y);
+                }
 
+            }
+            
             ctx.drawImage(assetLoader.imgs.bg3, bg3.x, bg3.y);
-            if( this.right === true ) {
-                ctx.drawImage(assetLoader.imgs.bg3, bg3.x + canvas.width, bg3.y);
 
-                if( (bg3.x + canvas.width) < -1 ) {
-                    ctx.drawImage(assetLoader.imgs.bg3, bg3.x + canvas.width, bg3.y);
-                } else {
-                    ctx.drawImage(assetLoader.imgs.bg3, bg3.x - canvas.width, bg3.y);
-                }
-            }
-            if( this.left === true ) {
-                ctx.drawImage(assetLoader.imgs.bg3, bg3.x - canvas.width, bg3.y);
+            if( this.rightBtn === true ) {
+                if( (bg3.x - assetLoader.imgs.bg3.width) < -88 && (bg3.x + assetLoader.imgs.bg3.width) > 300 )  {
 
-                if( (bg3.x + canvas.width) < 0 ) {
                     ctx.drawImage(assetLoader.imgs.bg3, bg3.x - canvas.width, bg3.y);
                 }
                 else {
+                    
+                    ctx.drawImage(assetLoader.imgs.bg3, bg3.x + canvas.width, bg3.y); //true
+
+                }
+
+            }
+            if( this.leftBtn === true ) {
+                if( (bg3.x + assetLoader.imgs.bg3.width) < 300  ) {
+                    //console.log("inside 1");
                     ctx.drawImage(assetLoader.imgs.bg3, bg3.x + canvas.width, bg3.y);
+                }
+                else {
+                    //console.log("inside 2");
+                    ctx.drawImage(assetLoader.imgs.bg3, bg3.x - canvas.width, bg3.y);
                 }
 
             }
 
             ctx.drawImage(assetLoader.imgs.bg4, bg4.x, bg4.y);
-            if( this.right === true ) {
-                ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y);
-
-                if( (bg4.x + canvas.width) < -1 ) {
+            if( this.rightBtn === true ) {
+                //console.log("inside right ===> ");
+                //ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y);
+                //console.log(" canvas.width + "+(bg4.x + canvas.width) );
+                //console.log(" canvas limit + "+(bg4.x + assetLoader.imgs.bg4.width) );
+                //console.log(" canvas.width - "+(bg4.x - canvas.width) );
+                //console.log(" canvas limit - "+(bg4.x - assetLoader.imgs.bg4.width) );
+                //console.log("=========================================================");
+                /*if( (bg4.x + canvas.width) < -1 ) {
                     ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y);
                 } else {
                     ctx.drawImage(assetLoader.imgs.bg4, bg4.x - canvas.width, bg4.y);
+                }*/
+
+                //( here it is important that both conditions are kept in mind, and both conditions are met )
+                //( note that here bg4.x +/- assetLoader.imgs.width is used because actual image pixel should be changed )
+                if( (bg4.x - assetLoader.imgs.bg4.width) < -88 && (bg4.x + assetLoader.imgs.bg4.width) > 300 )  {
+
+                    ctx.drawImage(assetLoader.imgs.bg4, bg4.x - canvas.width, bg4.y);
+                }
+                else {
+                    
+                    ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y); //true
+
                 }
 
             }
-            if( this.left === true ) {
-                ctx.drawImage(assetLoader.imgs.bg4, bg4.x - canvas.width, bg4.y);
-
-                if( (bg4.x + canvas.width) < 0 ) {
+            if( this.leftBtn === true ) {
+                //console.log("inside left ===> ");
+                
+                //console.log(" canvas.width + "+(bg4.x + canvas.width) );
+                //console.log(" canvas limit + "+(bg4.x + assetLoader.imgs.bg4.width) );
+                //console.log(" canvas.width - "+(bg4.x - canvas.width) );
+                //console.log(" canvas limit - "+(bg4.x - assetLoader.imgs.bg4.width) );
+                //console.log("=========================================================");
+                /*if( (bg4.x + canvas.width) < 0 ) {
                     ctx.drawImage(assetLoader.imgs.bg4, bg4.x - canvas.width, bg4.y);
                 }
                 else {
                     ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y);
-                }
+                }*/
 
+                if( (bg4.x + assetLoader.imgs.bg4.width) < 300  ) {
+                    //console.log("inside 1");
+                    ctx.drawImage(assetLoader.imgs.bg4, bg4.x + canvas.width, bg4.y);
+                }
+                else {
+                    //console.log("inside 2");
+                    ctx.drawImage(assetLoader.imgs.bg4, bg4.x - canvas.width, bg4.y);
+                }
             }
             //console.log("sky.x "+sky.x+" sky.x + canvas.width "+(sky.x+canvas.width));
             
@@ -245,7 +288,7 @@
 
             //if image scrolled off the screen then do below
             //console.log("constantly checking value of bg1 "+(canvas.width)+" "+canvas.height);
-            if( this.right === true ) {
+            if( this.rightBtn === true ) {
                 //console.log(" bg1.x right "+bg1.x+" "+(bg1.x + assetLoader.imgs.bg1.width ) );
                 //console.log(" bg1.x value drawn "+(bg1.x + canvas.width) ) ;
                 //console.log("t f "+( bg1.x + assetLoader.imgs.bg1.width >= assetLoader.imgs.bg1.width ));
@@ -265,7 +308,7 @@
 
             }
             
-            if( this.left === true ) {
+            if( this.leftBtn === true ) {
 
              
                 //console.log(" bg1.x left "+bg1.x+" "+(bg1.x - assetLoader.imgs.bg1.width ) );
@@ -282,7 +325,7 @@
                     //console.log("ok ====> ************************* ");
                     bg3.x=0;
                 }
-                if( bg4.x - assetLoader.imgs.bg4.width >= -300 ){
+                if( bg4.x - assetLoader.imgs.bg4.width >= -88 ){
                     //console.log("ok ====> ************************* ");
                     bg4.x=0;
                 }
@@ -319,11 +362,15 @@
         return {
             draw: this.draw,
             reset: this.reset,
-            left: this.left,
-            right: this.right
+            left: this.leftBtn,
+            right: this.rightBtn,
+            isRunning: this.isRunning
         }
         
     }());
+
+
+    //background finish
 
     /*
      *Request animation
@@ -367,15 +414,16 @@
                     //alert('clicked an element');
                 if( x > 7 && x  < 62 )
                 {
-                    background.left=true;
-                    background.right=false;
+                    background.leftBtn=true;
+                    background.rightBtn=false;
                 }else if( x > 544 && x  < 599 )
                 {
-                    background.left=false;
-                    background.right=true;
+                    background.leftBtn=false;
+                    background.rightBtn=true;
 
                 }
                 //console.log("value when pressed down ==>"+x+" "+(x + element.width)+" left "+background.left+" right "+background.right);
+                    background.isRunning = true;
                     stop = false;
                     animate();
                 }
@@ -396,12 +444,69 @@
                 if (y > element.top && y < element.top + element.height 
                     && x > element.left && x < element.left + element.width) {
                     //alert('clicked an element');
+                    background.isRunning = false;
                     stop = true;
                     
                 }
             });
 
         }, false);
+
+        /* 
+         *Keep track of keycodes
+         */
+        var KEY_CODES = {
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down'
+        };
+        
+        var KEY_STATUS = {};
+        for(var code in KEY_CODES) {
+            //console.log("check if ongoing");
+            if (KEY_CODES.hasOwnProperty(code)) {
+                    KEY_STATUS[KEY_CODES[code]] = false;
+            }
+        }
+        document.onkeydown = function(e){
+            var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+            if(KEY_CODES[keyCode]){
+                e.preventDefault();
+                KEY_STATUS[KEY_CODES[keyCode]] = true;
+                
+                if( keyCode === 37 ) {
+                    background.leftBtn=true;
+                    background.rightBtn=false;
+                }
+                else if( keyCode === 39 ) {
+                    background.leftBtn=false;
+                    background.rightBtn=true;
+                }
+
+                if( (keyCode === 37 ||
+                    keyCode === 39) && background.isRunning === false ){
+                    background.isRunning = true;
+                    stop = false;
+                    animate();
+                }
+                
+            }
+        };
+        document.onkeyup = function(e){
+           var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+           if(KEY_CODES[keyCode]){
+               e.preventDefault();
+               KEY_STATUS[KEY_CODES[keyCode]] = false;
+               if( (keyCode === 37 ||
+                   keyCode === 39) && background.isRunning === true ) {
+                    background.isRunning = false;
+                    stop = true;
+                }
+                
+
+           }
+        };
 
         // Add element.
         elements.push({
