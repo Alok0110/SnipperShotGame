@@ -10,10 +10,16 @@
     var ctx = canvas.getContext('2d');
     var canvasPlayer = document.getElementById("player");
     var ctxPlayer = canvasPlayer.getContext('2d');
+    //ctxPlayer.scale(1,1);
+    var canvasLevel = document.getElementById("level");
+    var ctxLevel = canvasLevel.getContext('2d');
     var stop = false;
     var backgroundStop = false;
     var tileW = 29, tileH = 29;
     var mapW = 44; //20 x 30  =600 
+    var currentSecond = 0, frameCount = 0, framesLastSecond = 0;
+    var lastFrameTime = 0;
+    
     var mapH = 6; //12 x 30  =360
     // 60 x 18
     // 6 x 44
@@ -25,8 +31,8 @@
         "level1": [
 
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
@@ -58,9 +64,22 @@
                            //here px is player x co-ordinate and py is player y co-ordinate
         update    : function( px, py ) {
                 
-                console.log("player x axis ==>"+px+" player y axis ==>"+py);
-                //this.offset[0] = 
-                //this.offset[1] = 
+                //console.log("player x axis ==>"+px+" player y axis ==>"+py);
+                this.offset[0] = 80 - px ;
+                this.offset[1] = 87 - py ;
+
+                var tile = [ Math.ceil(px/tileW), Math.ceil(py/tileH) ];
+
+                this.startTile[0] = tile[0] - 3;
+                this.startTile[1] = 0;
+
+                this.endTile[0] = (tile[0] - 3) + 44;
+                this.endTile[1] = 6;
+
+                if( this.endTile[0] >= mapW ){ this.endTile[0] = mapW - 1; };
+                if( this.endTile[1] >= mapH ){ this.endTile[1] = mapH - 1; };
+
+
         }
 
     }
@@ -331,7 +350,7 @@
                 //console.log(" bg1.x value drawn "+(bg1.x + canvas.width) ) ;
                 //console.log("t f "+( bg1.x + assetLoader.imgs.bg1.width >= assetLoader.imgs.bg1.width ));
                 if( bg1.x + assetLoader.imgs.bg1.width <= 0 ){
-                    console.log("*********************************************************************************************************************");
+                    //console.log("*********************************************************************************************************************");
                     bg1.x=0;
                 }
                 if( bg2.x + assetLoader.imgs.bg2.width <= 0 ){
@@ -442,6 +461,53 @@
         }
         //console.log("continue calling animate");
         
+        //
+        var currentFrameTime = Date.now();
+        var timeElapsed = currentFrameTime - lastFrameTime; //check the time elaspsed from the last time untill this
+
+        var sec = Math.floor(Date.now()/1000); //time in seconds
+        if( sec!=currentSecond ) { //this is just to calculate the frameCount in 1 second of time, it is 60 frames per second
+
+            currentSecond = sec;
+            framesLastSecond = frameCount;
+            frameCount = 1;
+        }
+        else {
+            frameCount++;
+        }
+        
+        //
+        if( !player.processMovement( currentFrameTime ) ){
+
+            //console.log("INISIDE PROCESS MOVEMENT ======================================================> leftBtn "+background.leftBtn+" rightBtn "+background.rightBtn);
+            /*if( keysDown[38] && player.tileFrom[1] > 0 && gameMap[ toIndex( player.tileFrom[0], player.tileFrom[1] - 1 ) ] == 1 ) {
+                player.tileTo[1] -= 1;
+            }
+            //Down key
+            else if( keysDown[40] && player.tileFrom[1] < (mapH-1) && gameMap[ toIndex( player.tileFrom[0], player.tileFrom[1] + 1 ) ] == 1 ) {
+                    player.tileTo[1] += 1;
+            }*/
+            //Left key
+            if(    KEY_STATUS['left'] && player.tileFrom[0] > 0 && levelObj["level1"][ toIndex( player.tileFrom[0] - 1, player.tileFrom[1]  ) ] == 0  ) {
+
+                    player.tileTo[0] -= 1;
+                    player.tileTo2[0] -= 1;
+
+            }
+            //Right key
+            else if(    KEY_STATUS['right'] && player.tileFrom[0] < (mapW-1) && levelObj["level1"][ toIndex( player.tileFrom[0] + 1, player.tileFrom[1]  ) ] == 0  ) {
+
+                    player.tileTo[0] += 1;
+                    player.tileTo2[0] += 1;
+
+            }
+
+            //check if player has moved, only then set timeMoved to currentFrameTime
+            if( player.tileFrom[0] != player.tileTo[0]  ){
+                    player.timeMoved = currentFrameTime;
+            }
+
+        }
 
         //constantly update the player position, also calculate the player position 
         viewport.update( player.position[0] , player.position[1]  );
@@ -449,42 +515,165 @@
 
         //culling process
         //this actually draws the view port depending on the player position
-        for(var y = 0; y <= 6; y++) {
+        //console.log(" viewport.startTile[0] "+viewport.startTile[0]+" viewport.endTile[0] "+viewport.endTile[0]);
+        //console.log(" viewport.startTile[1] "+viewport.startTile[1]+" viewport.endTile[1] "+viewport.endTile[1]);
+        ctxLevel.clearRect(0, 0, 600, 360);
+        for(var y = viewport.startTile[1]; y <= viewport.endTile[1]; y++) { //0, 6
 
-                for(var x = 0; x <= 44; x++) {
+                for(var x = viewport.startTile[0]; x <= viewport.endTile[0]; x++) { //0, 44
 
                     switch( levelObj["level1"][ ((y*mapW)+x) ] ) {
                         case 0: 
                             
                             break;
                         case 1:
-                            ctx.fillStyle = '#eeeeee';
-                            ctx.fillRect( viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH );
+                            ctxLevel.fillStyle = '#eeeeee';
+                            ctxLevel.fillRect( viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH );
                             break;
                         case 3:
                             //ctx.fillStyle = '#ff0000';
                             //ctx.fillRect( viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH );
-                            ctx.drawImage(assetLoader.imgs.levelGrass, 7, 9, 40, 40, viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH);
+                            // 7 9 40 40
+                            ctxLevel.drawImage(assetLoader.imgs.levelGrass, 5, 5, 35, 50, viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH);
                             break;
                         default:
-                            ctx.fillStyle = "#0000ff";
-                            ctx.fillRect( viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH );
+                            ctxLevel.fillStyle = "#0000ff";
+                            ctxLevel.fillRect( viewport.offset[0] + x*tileW, viewport.offset[1] + y*tileH, tileW, tileH );
                     }
 
                     
 
                 }
 
+
+
+
         }
+
+         //ctxLevel.fillStyle = '#0000ff';
+         //console.log("check player position ==>"+(viewport.offset[1] ) );
+        //here the player that is the RED BOX is displayed, we don't want this in our case
+         //ctxLevel.fillRect( viewport.offset[0] + player.position[0], viewport.offset[1] + player.position[1], player.dimensions[0], player.dimensions[1] );
 
 
         //player update
         player.update();
         player.draw();
 
+        lastFrameTime = currentFrameTime;
+
         requestAnimFrame( animate );
 
     }
+
+
+    /* 
+         *Keep track of keycodes
+         */
+        var KEY_CODES = {
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down',
+            88: 'jump',
+            67: 'shoot',
+            90: 'knife'
+        };
+        
+        var KEY_STATUS = {};
+        for(var code in KEY_CODES) {
+            //console.log("check if ongoing");
+            if (KEY_CODES.hasOwnProperty(code)) {
+                    KEY_STATUS[KEY_CODES[code]] = false;
+            }
+        }
+        document.onkeydown = function(e){
+            var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+            if(KEY_CODES[keyCode]){
+                e.preventDefault();
+                KEY_STATUS[KEY_CODES[keyCode]] = true;
+                
+                if( keyCode === 37 ) {
+                    background.leftBtn=true;
+                    background.rightBtn=false;
+
+
+                    player.runSprite.rightRun = false;
+                    player.runSprite.leftRun = true;
+                }
+                else if( keyCode === 39 ) {
+                    background.leftBtn=false;
+                    background.rightBtn=true;
+
+                    player.runSprite.rightRun = true;
+                    player.runSprite.leftRun = false;
+
+                        player.isRunning = true;
+                        player.isStanding = false;
+                        player.isBend = false;
+                        player.isShooting = false;
+                        player.isJumping = false;
+                        player.isKnifeAttack = false;
+                }
+        
+                if( keyCode === 88 ) {
+                    //console.log("pressed jump ==>");
+                }
+
+                if( keyCode === 67 ) {
+                    //console.log("pressed shot ==>");
+                }
+
+                if( keyCode === 90 ) {
+                    //console.log("knife used ==>");
+                        player.isRunning = false;
+                        player.isStanding = false;
+                        player.isBend = false;
+                        player.isShooting = false;
+                        player.isJumping = false;
+                        player.isKnifeAttack = true;
+                }
+
+                if( (keyCode === 37 ||
+                    keyCode === 39) && background.isRunning === false ){
+                    background.isRunning = true;
+                    backgroundStop = false;
+                    //animate();
+                }
+                
+            }
+        };
+        document.onkeyup = function(e){
+           var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
+           if(KEY_CODES[keyCode]){
+               e.preventDefault();
+               KEY_STATUS[KEY_CODES[keyCode]] = false;
+               if( (keyCode === 37 ||
+                   keyCode === 39) && background.isRunning === true ) {
+                    background.isRunning = false;
+                    backgroundStop = true;
+
+                        player.isRunning = false;
+                        player.isStanding = true;
+                        player.isBend = false;
+                        player.isShooting = false;
+                        player.isJumping = false;
+                        player.isKnifeAttack = false;
+                }
+
+                if( keyCode === 90 ) {
+                    //console.log("knife used ==>");
+                        player.isRunning = false;
+                        player.isStanding = true;
+                        player.isBend = false;
+                        player.isShooting = false;
+                        player.isJumping = false;
+                        player.isKnifeAttack = false;
+                }
+                
+
+           }
+        };
 
     //console.log("this is outer function");
     var testI = function(){
@@ -554,106 +743,7 @@
 
         }, false);
 
-        /* 
-         *Keep track of keycodes
-         */
-        var KEY_CODES = {
-            37: 'left',
-            38: 'up',
-            39: 'right',
-            40: 'down',
-            88: 'jump',
-            67: 'shoot',
-            90: 'knife'
-        };
         
-        var KEY_STATUS = {};
-        for(var code in KEY_CODES) {
-            //console.log("check if ongoing");
-            if (KEY_CODES.hasOwnProperty(code)) {
-                    KEY_STATUS[KEY_CODES[code]] = false;
-            }
-        }
-        document.onkeydown = function(e){
-            var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
-            if(KEY_CODES[keyCode]){
-                e.preventDefault();
-                KEY_STATUS[KEY_CODES[keyCode]] = true;
-                
-                if( keyCode === 37 ) {
-                    background.leftBtn=true;
-                    background.rightBtn=false;
-                }
-                else if( keyCode === 39 ) {
-                    background.leftBtn=false;
-                    background.rightBtn=true;
-
-                        player.isRunning = true;
-                        player.isStanding = false;
-                        player.isBend = false;
-                        player.isShooting = false;
-                        player.isJumping = false;
-                        player.isKnifeAttack = false;
-                }
-        
-                if( keyCode === 88 ) {
-                    console.log("pressed jump ==>");
-                }
-
-                if( keyCode === 67 ) {
-                    console.log("pressed shot ==>");
-                }
-
-                if( keyCode === 90 ) {
-                    console.log("knife used ==>");
-                        player.isRunning = false;
-                        player.isStanding = false;
-                        player.isBend = false;
-                        player.isShooting = false;
-                        player.isJumping = false;
-                        player.isKnifeAttack = true;
-                }
-
-                if( (keyCode === 37 ||
-                    keyCode === 39) && background.isRunning === false ){
-                    background.isRunning = true;
-                    backgroundStop = false;
-                    //animate();
-                }
-                
-            }
-        };
-        document.onkeyup = function(e){
-           var keyCode = (e.keyCode) ? e.keyCode : e.charCode;
-           if(KEY_CODES[keyCode]){
-               e.preventDefault();
-               KEY_STATUS[KEY_CODES[keyCode]] = false;
-               if( (keyCode === 37 ||
-                   keyCode === 39) && background.isRunning === true ) {
-                    background.isRunning = false;
-                    backgroundStop = true;
-
-                        player.isRunning = false;
-                        player.isStanding = true;
-                        player.isBend = false;
-                        player.isShooting = false;
-                        player.isJumping = false;
-                        player.isKnifeAttack = false;
-                }
-
-                if( keyCode === 90 ) {
-                    //console.log("knife used ==>");
-                        player.isRunning = false;
-                        player.isStanding = true;
-                        player.isBend = false;
-                        player.isShooting = false;
-                        player.isJumping = false;
-                        player.isKnifeAttack = false;
-                }
-                
-
-           }
-        };
 
         // Add element.
         elements.push({
@@ -687,7 +777,7 @@
         
         this.image.onload = function(){
             self.framesPerRow = Math.floor(self.image.width / self.frameWidth);
-            console.log("check frames per row first ================================> "+self.framesPerRow+" ==> "+self.image.width+" ==> "+self.frameWidth);
+            //console.log("check frames per row first ================================> "+self.framesPerRow+" ==> "+self.image.width+" ==> "+self.frameWidth);
         };
         
         this.image.src = path;
@@ -701,6 +791,9 @@
         var animationSequence = [];  //array holding the order of animation
         var currentFrame = 0;        //current frame to draw
         var counter = 0;             //keep track of frame rate
+
+        this.leftRun;
+        this.rightRun;
         
         for(var frameNumber = startFrame; frameNumber <= endFrame; frameNumber++  ) {
             animationSequence.push(frameNumber);
@@ -721,6 +814,8 @@
             //ctxPlayer.clearRect(x,y,spritesheet.frameWidth,spritesheet.frameHeight);
         }
 
+
+
         this.draw = function(x, y) {
             var row = Math.floor( animationSequence[currentFrame] / spritesheet.framesPerRow );
             var col = Math.floor( animationSequence[currentFrame] % spritesheet.framesPerRow );
@@ -738,6 +833,12 @@
 
 
             */
+            /*console.log("ok running left =============> "+this.leftRun+" "+this.rightRun);
+            if( this.leftRun == true && this.rightRun == false ) {
+                console.log("ok running left =============> ");
+                ctxPlayer.scale(-1,1);
+            }*/
+            console.log(" col value "+col+" row value "+row);
             ctxPlayer.clearRect(x,y,spritesheet.frameWidth,spritesheet.frameHeight);
             ctxPlayer.drawImage(
                 spritesheet.image,
@@ -760,12 +861,15 @@
     //Character function
     //29px is standard tile
     function Character(){
-        this.tileFrom   = [1,1];
-        this.tileTo     = [1,1];
+        this.tileFrom   = [3,3];
+        this.tileFrom2  = [3,4];
+        this.tileTo     = [3,3];
+        this.tileTo2    = [3,4];
         this.tileMoved  = 0;
-        this.dimensions = [90,90];
+        this.dimensions = [29, 58];
         //80 60
         this.position   = [80,87];
+        this.playerAct  =  [80,87];
         this.isRunning = false;
         this.isStanding = true;
         this.isBend = false;
@@ -811,7 +915,7 @@
 
         if(  !this.isStanding && this.isRunning && !this.isBend &&
              !this.isShooting && !this.isJumping && !this.isKnifeAttack ){
-            console.log("inside running used ====> update");
+            //console.log("inside running used ====> update");
             this.runSprite.update();
         }
 
@@ -824,7 +928,7 @@
              !this.isShooting && !this.isJumping && !this.isKnifeAttack ){
             //console.log("ok inside standing");
 
-            this.standSprite.draw(player.position[0],player.position[1]);
+            this.standSprite.draw(player.playerAct[0],player.playerAct[1]);
             //ctx.fillStyle = '#0000ff';
             //ctx.fillRect( 0, 0, 20, 40);
         }
@@ -833,37 +937,53 @@
              !this.isShooting && !this.isJumping && this.isKnifeAttack ){
             //console.log("inside knife used ====> draw ");
             //this.knifeSprite.clearM(0,0);
-            this.knifeSprite.draw(player.position[0],player.position[1]);
+            this.knifeSprite.draw(player.playerAct[0],player.playerAct[1]);
         }
 
         if(  !this.isStanding && this.isRunning && !this.isBend &&
              !this.isShooting && !this.isJumping && !this.isKnifeAttack ){
-            console.log("inside running used ====> draw");
-            this.runSprite.draw(player.position[0],player.position[1]);
+            //console.log("inside running used ====> draw");
+            this.runSprite.draw(player.playerAct[0],player.playerAct[1]);
         }
 
     }
 
-    Character.prototype.processMovement = function(){
+    Character.prototype.placeAt = function(x,y) {
+
+        this.tileFrom = [x,y];
+        this.tileTo   = [x,y];
+        //for x = 2, y = 1
+        // 80 + 5
+        // 40 + 5
+
+        //positions are always pixel
+        this.position = [tileW*x , 
+                         tileH*y ];
+    }
+
+    Character.prototype.processMovement = function( t ){
 
         if( this.tileFrom[0] == this.tileTo[0] &&
             this.tileFrom[1] == this.tileTo[1] ){
             return false;
         }
 
+        //console.log(" this.tileFrom 0 "+this.tileFrom[0]+" this.tileTo 0 "+this.tileTo[0]);
+        //console.log(" this.tileFrom 1 "+this.tileFrom[1]+" this.tileTo 1 "+this.tileTo[1]);
 
-/*
+
+
          if( (t - this.tileMoved) >= this.delayMove ) {
 
             this.placeAt( this.tileTo[0], this.tileTo[1] ); 
-                                                            
+            //console.log("tile was placed here ===> at tileTo 0 "+this.tileTo[0]+" tileTo 1 "+this.tileTo[1]);
 
             }
             else {
                    
-                   this.position[0] = (this.tileFrom[0] * tileW) + (tileW - this.dimensions[0])/2;
+                   this.position[0] = (this.tileFrom[0] * tileW);
 
-                   this.position[1] = (this.tileFrom[1] * tileH) + (tileH - this.dimensions[1])/2;
+                   this.position[1] = (this.tileFrom[1] * tileH);
 
                    if( this.tileTo[0] != this.tileFrom[0] ) {
 
@@ -892,12 +1012,17 @@
                    this.position[0] = Math.round( this.position[0] );
                    this.position[1] = Math.round( this.position[1] );
             }
-            */
+            
+
             return true;
 
     }
     
-    
+    function toIndex(x,y){
+
+        return ( (y * mapW) + x );
+
+    }
     
     function startGame(){
         //animate();
@@ -905,7 +1030,7 @@
         background.draw();
         //level 1 for begining
         gameLevel.currentLevel = levelObj["level"+levelCnt];
-        console.log(gameLevel.currentLevel);
+        //console.log(gameLevel.currentLevel);
         animate();
     }
     //Loading All Images
