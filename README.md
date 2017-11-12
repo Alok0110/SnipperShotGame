@@ -15,4 +15,4 @@ Single Player for version 1.0, This is a Javascript single player game project d
 
 *^  Up Arrow for Simple jump*
 
-*   Space Bar for High jump*
+   *Space Bar for High jump*
