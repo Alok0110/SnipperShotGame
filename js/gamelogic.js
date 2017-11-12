@@ -768,8 +768,21 @@
                 if( keyCode === 90 ) {
                     //console.log("knife used ==>");
                         keyBKeys.isRunning = false;
-                        keyBKeys.isStanding = true;
-                        keyBKeys.isLeftStanding=false;
+
+                        if( keyBKeys.rightRun == true && 
+                            keyBKeys.leftRun == false ) {
+                                keyBKeys.isStanding = true;
+                                keyBKeys.isLeftStanding = false;
+                        }
+                        if( keyBKeys.rightRun == false && 
+                            keyBKeys.leftRun == true  ){
+                                keyBKeys.isStanding = false;
+                                keyBKeys.isLeftStanding = true;
+                        }
+
+                        //keyBKeys.isStanding = true;
+                        //keyBKeys.isLeftStanding=false;
+
                         keyBKeys.isBend = false;
                         keyBKeys.isShooting = false;
                         keyBKeys.isJumping = false;
@@ -891,7 +904,7 @@
     /*
      *This function is used to animate the player
      */
-    function Animation( spritesheet, frameSpeed, startFrame, endFrame, isLeft ){
+    function Animation( spritesheet, frameSpeed, startFrame, endFrame, isLeft, leftFpr ){
         
         var animationSequence = [];  //array holding the order of animation
         var currentFrame = 0;        //current frame to draw
@@ -907,16 +920,20 @@
         
         //
         if( isLeft ) {
-            var fpr = 3;
+            animationSequence = [];
+            //console.log("leftFpr "+leftFpr);
+            var fpr = leftFpr;
             var nor = ( endFrame + 1 ) / fpr;
 
             for( var j=nor; j>=1 ; j-- ){
-                    for( var i=((fpr*nor)/j); i>=((fpr*nor)/j)-2; i-- ) {
+                    for( var i=((fpr*nor)/j); i>=((fpr*nor)/j)-(leftFpr-1); i-- ) {
                         //animationSequence2.push( ((fpr-i)*j)  );
+
                         animationSequence.push(i-1);
                 }
             }
-            
+            //console.log("inside left ");
+                        //console.log(animationSequence);
         }
 
         //console.log("check this two arrays below 1");
@@ -1025,13 +1042,13 @@
         this.dw = 55;
         this.dh = 60;
 
-        this.standSprite = new Animation( new SpriteSheet( assetLoader.imgs.comknife, 50, 58 ), 9, 0, 0, false );
-        this.standLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comLeftKnife, 50, 58 ), 9, 1, 1, false );
-        this.knifeSprite = new Animation( new SpriteSheet( assetLoader.imgs.comknife, 50, 58 ), 9, 0, 3, false );
-        this.runSprite = new Animation( new SpriteSheet( assetLoader.imgs.comrun, 50, 58 ), 5, 0, 5, false );
-        this.sitSprite = new Animation( new SpriteSheet( assetLoader.imgs.comsit, 47, 58 ), 9, 0, 3, false );
-        this.runLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comleftrun, 50, 58 ), 5, 0, 5, true );
-
+        this.standSprite = new Animation( new SpriteSheet( assetLoader.imgs.comknife, 50, 58 ), 9, 0, 0, false, 0 );
+        this.standLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comLeftKnife, 50, 58 ), 9, 1, 1, false, 2 );
+        this.knifeSprite = new Animation( new SpriteSheet( assetLoader.imgs.comknife, 50, 58 ), 9, 0, 3, false, 0 );
+        this.runSprite = new Animation( new SpriteSheet( assetLoader.imgs.comrun, 50, 58 ), 5, 0, 5, false, 0 );
+        this.sitSprite = new Animation( new SpriteSheet( assetLoader.imgs.comsit, 47, 58 ), 9, 0, 3, false, 0 );
+        this.runLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comleftrun, 50, 58 ), 5, 0, 5, true, 3 );
+        this.knifeLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comLeftKnife, 50, 58 ), 9, 0, 3, true, 2 );
         //this.delayMove  = 700; 
         // 5 + 64 + 64 + 64 + 5 = 202
         // 5 + 66 + 66 + 5 = 142
@@ -1064,9 +1081,15 @@
         if(  !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && keyBKeys.isKnifeAttack &&
              !keyBKeys.isLeftStanding ){
-            //console.log("inside knife used ====> update");
 
-            this.knifeSprite.update();
+            console.log("inside knife used ====> update "+keyBKeys.leftRun+" "+keyBKeys.rightRun);
+            if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
+                this.knifeSprite.update();
+            }
+            
+            if( keyBKeys.leftRun == true && keyBKeys.rightRun == false ) {
+                this.knifeLeftSprite.update();
+            }
         }
 
         if(  !keyBKeys.isStanding && keyBKeys.isRunning && !keyBKeys.isBend &&
@@ -1119,7 +1142,12 @@
              !keyBKeys.isLeftStanding ){
             //console.log("inside knife used ====> draw ");
             //this.knifeSprite.clearM(0,0);
-            this.knifeSprite.draw(player.playerAct[0],player.playerAct[1]);
+            if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
+                this.knifeSprite.draw(player.playerAct[0],player.playerAct[1]);
+            }
+            if( keyBKeys.leftRun == true && keyBKeys.rightRun == false ) {
+                this.knifeLeftSprite.draw(player.playerAct[0],player.playerAct[1]);
+            }
         }
 
         if(  !keyBKeys.isStanding && keyBKeys.isRunning && !keyBKeys.isBend &&
