@@ -3,8 +3,8 @@ Single Player for version 1.0, This is a Javascript single player game project d
 
 ## Controls
 
->  Right Arrow for Right movement
-<  Left Arrow for Left movement
+*>  Right Arrow for Right movement*
+*<  Left Arrow for Left movement*
 v  Down Arrow for Sit movement
 Z  Press 'Z' for Knife attack
 X  Press 'X' for Gun fire
