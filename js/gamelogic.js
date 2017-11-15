@@ -130,7 +130,9 @@
             'levelGrass': 'img/grass.png',
             'comsit'    : 'img/com-sit-e.png',
             'comleftrun': 'img/com-left-run-e.png',
-            'comLeftKnife' : 'img/com-left-knife-e.png'
+            'comLeftKnife' : 'img/com-left-knife-e.png',
+            'comFire'      : 'img/com-fire-e.png',
+            'comLeftFire'  : 'img/com-left-fire-e.png'
             
         }
         
@@ -549,10 +551,10 @@
         //this actually draws the view port depending on the player position
         //console.log(" viewport.startTile[0] "+viewport.startTile[0]+" viewport.endTile[0] "+viewport.endTile[0]);
         //console.log(" viewport.startTile[1] "+viewport.startTile[1]+" viewport.endTile[1] "+viewport.endTile[1]);
-        ctxLevel.clearRect(0, 0, 600, 360);
-
         
 
+                //the below is the proper way of clearing the screen according to the culling process
+                ctxLevel.clearRect(0, 0, viewport.screen[0], viewport.screen[1]); //600 300
                 for(var y = viewport.startTile[1]; y <= viewport.endTile[1]; y++) { //0, 6
 
                         for(var x = viewport.startTile[0]; x <= viewport.endTile[0]; x++) { //0, 44
@@ -703,6 +705,7 @@
                             keyBKeys.isShooting = false;
                             keyBKeys.isJumping = false;
                             keyBKeys.isKnifeAttack = false;
+                            keyBKeys.isFireAttack = false;
                         }
                         
                     
@@ -741,6 +744,8 @@
                         keyBKeys.isShooting = false;
                         keyBKeys.isJumping = false;
                         keyBKeys.isKnifeAttack = false;
+                        keyBKeys.isFireAttack = false;
+
                     }
                     
                         console.log( " leftRun "+keyBKeys.leftRun+
@@ -770,6 +775,8 @@
                         keyBKeys.isShooting = false;
                         keyBKeys.isJumping = false;
                         keyBKeys.isKnifeAttack = false;
+                        keyBKeys.isFireAttack = false;
+
                     }
                     
 
@@ -777,6 +784,18 @@
         
                 if( keyCode === 88 ) {
                     //console.log("pressed jump ==>");
+                    if( checkPress == 1 ){
+                        keyBKeys.isRunning = false;
+                        keyBKeys.isStanding = false;
+                        keyBKeys.isLeftStanding=false;
+                        keyBKeys.isBend = false;
+                        keyBKeys.isShooting = false;
+                        keyBKeys.isJumping = false;
+                        keyBKeys.isKnifeAttack = false;
+                        keyBKeys.isFireAttack = true;
+
+                        
+                    }
                 }
 
                 if( keyCode === 67 ) {
@@ -794,6 +813,8 @@
                         keyBKeys.isShooting = false;
                         keyBKeys.isJumping = false;
                         keyBKeys.isKnifeAttack = true;
+                        keyBKeys.isFireAttack = false;
+
                         
                     }
                     
@@ -862,7 +883,41 @@
                     keyBKeys.isShooting = false;
                     keyBKeys.isJumping = false;
                     keyBKeys.isKnifeAttack = false;
+                    keyBKeys.isFireAttack = false;
 
+
+                }
+
+                if( keyCode === 88 ) {
+
+
+                    if( keyBKeys.rightRun == true && 
+                            keyBKeys.leftRun == false &&
+                            keyBKeys.isRunning == false ) {
+
+                                keyBKeys.isStanding = true;
+                                keyBKeys.isLeftStanding = false;
+
+                        }
+                        if( keyBKeys.rightRun == false && 
+                            keyBKeys.leftRun == true   &&
+                            keyBKeys.isRunning == false){
+
+                                keyBKeys.isStanding = false;
+                                keyBKeys.isLeftStanding = true;
+
+                        }
+
+
+
+                    //keyBKeys.isRunning = false;
+                        //keyBKeys.isStanding = false;
+                        //keyBKeys.isLeftStanding=false;
+                        keyBKeys.isBend = false;
+                        keyBKeys.isShooting = false;
+                        keyBKeys.isJumping = false;
+                        keyBKeys.isKnifeAttack = false;
+                        keyBKeys.isFireAttack = false;
                 }
 
                 if( keyCode === 90 ) {
@@ -894,7 +949,8 @@
                         keyBKeys.isShooting = false;
                         keyBKeys.isJumping = false;
                         keyBKeys.isKnifeAttack = false;
-                        
+                        keyBKeys.isFireAttack = false;
+
                 }
                 
 
@@ -1118,6 +1174,7 @@
         this.isKnifeAttack = false;
         this.leftRun=false;
         this.rightRun=false;
+        this.isFireAttack = false;
 
     }
 
@@ -1142,6 +1199,7 @@
         keyBKeys.isShooting = false;
         keyBKeys.isJumping = false;
         keyBKeys.isKnifeAttack = false;
+        keyBKeys.isFireAttack = false;
         this.delayMove = 100;
         this.sx = 5;
         this.sy = 5;
@@ -1159,6 +1217,8 @@
         this.sitSprite = new Animation( new SpriteSheet( assetLoader.imgs.comsit, 47, 58 ), 9, 0, 3, false, 0 );
         this.runLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comleftrun, 50, 58 ), 5, 0, 5, true, 3 );
         this.knifeLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comLeftKnife, 50, 58 ), 9, 0, 3, true, 2 );
+        this.fireRightSprite = new Animation( new SpriteSheet( assetLoader.imgs.comFire, 50, 58 ), 9, 0, 3, false, 0 );
+        this.fireLeftSprite = new Animation( new SpriteSheet( assetLoader.imgs.comLeftFire, 50, 58 ), 9, 0, 3, true, 2 );
         //this.delayMove  = 700; 
         // 5 + 64 + 64 + 64 + 5 = 202
         // 5 + 66 + 66 + 5 = 142
@@ -1169,7 +1229,7 @@
         
         if(  keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack ){
             //console.log("ok inside standing");
 
             this.standSprite.update();
@@ -1179,7 +1239,7 @@
 
         if(  !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             keyBKeys.isLeftStanding ){
+             keyBKeys.isLeftStanding && !keyBKeys.isFireAttack ){
             //console.log("ok inside standing");
 
             this.standLeftSprite.update();
@@ -1190,7 +1250,7 @@
 
         if(  !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack ){
 
             console.log("inside knife used ====> update "+keyBKeys.leftRun+" "+keyBKeys.rightRun);
             if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
@@ -1204,7 +1264,7 @@
 
         if(  !keyBKeys.isStanding && keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack ){
             //console.log("inside running used ====> update");
             
             if( KEY_STATUS['left'] ) {
@@ -1217,9 +1277,23 @@
 
         if( !keyBKeys.isStanding && !keyBKeys.isRunning && keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding) {
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack) {
 
             this.sitSprite.update();
+        }
+
+        if( !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
+             !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
+             !keyBKeys.isLeftStanding && keyBKeys.isFireAttack ) {
+
+            
+            if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
+                this.fireRightSprite.update();
+            }
+            
+            if( keyBKeys.leftRun == true && keyBKeys.rightRun == false ) {
+                this.fireLeftSprite.update();
+            }
         }
 
     }
@@ -1229,7 +1303,7 @@
 
         if(  keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack ){
             //console.log("ok inside standing");
 
             this.standSprite.draw(player.playerAct[0],player.playerAct[1]);
@@ -1239,7 +1313,7 @@
 
         if(  !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             keyBKeys.isLeftStanding){
+             keyBKeys.isLeftStanding && !keyBKeys.isFireAttack  ){
             //console.log("ok inside standing");
 
             this.standLeftSprite.draw(player.playerAct[0],player.playerAct[1]);
@@ -1249,7 +1323,7 @@
 
         if(  !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack  ){
             //console.log("inside knife used ====> draw ");
             //this.knifeSprite.clearM(0,0);
             if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
@@ -1262,9 +1336,9 @@
 
         if(  !keyBKeys.isStanding && keyBKeys.isRunning && !keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ){
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack  ){
             //console.log("inside running used ====> draw");
-            this.runSprite.draw(player.playerAct[0],player.playerAct[1]);
+            //this.runSprite.draw(player.playerAct[0],player.playerAct[1]);
 
             if( KEY_STATUS['left'] ) {
                  this.runLeftSprite.draw(player.playerAct[0],player.playerAct[1]);
@@ -1277,9 +1351,24 @@
 
         if( !keyBKeys.isStanding && !keyBKeys.isRunning && keyBKeys.isBend &&
              !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
-             !keyBKeys.isLeftStanding ) {
-
+             !keyBKeys.isLeftStanding && !keyBKeys.isFireAttack  ) {
+ 
             this.sitSprite.draw(player.playerAct[0],player.playerAct[1]);
+        }
+
+        if( !keyBKeys.isStanding && !keyBKeys.isRunning && !keyBKeys.isBend &&
+             !keyBKeys.isShooting && !keyBKeys.isJumping && !keyBKeys.isKnifeAttack &&
+             !keyBKeys.isLeftStanding && keyBKeys.isFireAttack ) {
+
+            
+            if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
+                this.fireRightSprite.draw(player.playerAct[0],player.playerAct[1]);
+            }
+            
+            if( keyBKeys.leftRun == true && keyBKeys.rightRun == false ) {
+                this.fireLeftSprite.draw(player.playerAct[0],player.playerAct[1]);
+            }
+
         }
 
     }
