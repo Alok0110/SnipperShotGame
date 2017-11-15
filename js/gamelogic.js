@@ -223,7 +223,8 @@
 
             //pan background
             if( this.rightBtn === true && keyBKeys.isKnifeAttack === false &&
-                 keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false ) {
+                 keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false && 
+                 keyBKeys.isFireAttack === false ) {
                 bg1.x -= bg1.speed;
                 bg2.x -= bg2.speed;
                 bg3.x -= bg3.speed;
@@ -231,7 +232,8 @@
             }
 
             if( this.leftBtn === true && keyBKeys.isKnifeAttack === false &&
-                 keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false ) {
+                 keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false &&
+                 keyBKeys.isFireAttack === false ) {
                 bg1.x += bg1.speed;
                 bg2.x += bg2.speed;
                 bg3.x += bg3.speed;
@@ -521,7 +523,8 @@
             }*/
             //Left key
             if(    ( KEY_STATUS['left'] && keyBKeys.isKnifeAttack === false &&
-                     keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false  )  && player.tileFrom[0] > 0 && levelObj["level1"][ toIndex( player.tileFrom[0] - 1, player.tileFrom[1]  ) ] == 0  ) {
+                     keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false &&
+                     keyBKeys.isFireAttack === false  )  && player.tileFrom[0] > 0 && levelObj["level1"][ toIndex( player.tileFrom[0] - 1, player.tileFrom[1]  ) ] == 0  ) {
 
                     player.tileTo[0] -= 1;
                     player.tileTo2[0] -= 1;
@@ -529,7 +532,8 @@
             }
             //Right key
             else if(    ( KEY_STATUS['right'] && keyBKeys.isKnifeAttack === false &&
-                          keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false ) && player.tileFrom[0] < (mapW-1) && levelObj["level1"][ toIndex( player.tileFrom[0] + 1, player.tileFrom[1]  ) ] == 0  ) {
+                          keyBKeys.isStanding === false && keyBKeys.isLeftStanding === false &&
+                          keyBKeys.isFireAttack === false ) && player.tileFrom[0] < (mapW-1) && levelObj["level1"][ toIndex( player.tileFrom[0] + 1, player.tileFrom[1]  ) ] == 0  ) {
 
                     player.tileTo[0] += 1;
                     player.tileTo2[0] += 1;
@@ -615,8 +619,8 @@
             38: 'up',
             39: 'right',
             40: 'down',
-            88: 'jump',
-            67: 'shoot',
+            88: 'fire',
+            67: 'jump',
             90: 'knife'
         };
         
@@ -659,7 +663,7 @@
             var c=0;
             if( !KEY_STATUS[ "left" ]  && !KEY_STATUS[ "up" ]    &&
                 !KEY_STATUS[ "right" ] && !KEY_STATUS[ "down" ]  &&
-                !KEY_STATUS[ "jump" ]  && !KEY_STATUS[ "shoot" ] &&
+                !KEY_STATUS[ "jump" ]  && !KEY_STATUS[ "fire" ] &&
                 !KEY_STATUS[ "knife" ]  ) {
                 c=1;
             }
@@ -851,7 +855,8 @@
                 //while running a player can press Knife attack  in right direction
                         if( keyBKeys.rightRun == true && 
                             keyBKeys.leftRun == false &&
-                            keyBKeys.isKnifeAttack == false ) {
+                            keyBKeys.isKnifeAttack == false &&
+                            keyBKeys.isFireAttack == false ) {
 
                                 keyBKeys.isStanding = true;
                                 keyBKeys.isLeftStanding = false;
@@ -860,7 +865,8 @@
                 //while running a player can press Knife attack in left direction 
                         if( keyBKeys.rightRun == false && 
                             keyBKeys.leftRun == true   &&
-                            keyBKeys.isKnifeAttack == false  ){
+                            keyBKeys.isKnifeAttack == false &&
+                            keyBKeys.isFireAttack == false ){
 
                                 keyBKeys.isStanding = false;
                                 keyBKeys.isLeftStanding = true;
