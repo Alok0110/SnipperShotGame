@@ -1,3 +1,16 @@
+/* 
+ *
+ * Copyright (C) Joffer Systems, Inc - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Alok Dethe <det.alex0110@gmail.com>, Oct 2017
+ *
+ *
+ *
+ */
+
+
+
 //Game Logic
 
 ;(function( $, global ){
@@ -135,11 +148,26 @@
             'comLeftFire'  : 'img/com-left-fire-e.png'
             
         }
+
+        this.sounds = {
+            'bg': 'GameMusic/bgmusic.mp3',
+            'fireShot': 'GameMusic/MGun.mp3'
+        }
+
+
         
         var assetsLoaded = 0;
         var numImgs = Object.keys(this.imgs).length;    //total number of images
+        var numSounds = Object.keys(this.sounds).length;
         this.totalAssest = numImgs;                     //total number of images
         
+        //check the ready state of an audio file
+        function _checkAudioState( sound ){
+            if( this.sounds[sound].status === 'loading' && this.sounds[sound].readyState === 4 ){
+                    assetLoaded.call( this, 'sounds', sound );
+            }
+        }
+
         function assetLoaded( keyVal, name ) {
             
             if(this[keyVal][name].status !== 'loading'){
@@ -159,6 +187,7 @@
             var _this = this;
             var src;
          
+            //load images
             for(var img in this.imgs) {
                 if(this.imgs.hasOwnProperty(img)){
                     src = this.imgs[img];
@@ -174,10 +203,33 @@
                 }
             }
             //console.log("Reached here in Download All function !");
+
+            //load sounds
+            for( var sound in this.sounds ){
+                if( this.sounds.hasOwnProperty(sound) ){
+                        src = this.sounds[sound];
+
+                        //create closure for event binding
+                        (function( _this, sound ){
+
+                            _this.sounds[sound] = new Audio();
+                            _this.sounds[sound].status = 'loading';
+                            _this.sounds[sound].name = sound;
+                            _this.sounds[sound].addEventListener( 'canplay', function(){
+                                _checkAudioState.call( _this, sound );
+                            } );
+                            _this.sounds[sound].src = src;
+                            _this.sounds[sound].preload = 'auto';
+                            _this.sounds[sound].load();
+
+                        })(_this, sound);
+                }
+            }
         }
         
         return {
             imgs: this.imgs,
+            sounds: this.sounds,
             totalAssest: this.totalAssest,
             downloadAll: this.downloadAll
         };
@@ -798,6 +850,9 @@
                         keyBKeys.isKnifeAttack = false;
                         keyBKeys.isFireAttack = true;
 
+                        assetLoader.sounds.fireShot.currentTime = 0;
+                        assetLoader.sounds.fireShot.loop = true;
+                        assetLoader.sounds.fireShot.play();
                         
                     }
                 }
@@ -924,6 +979,8 @@
                         keyBKeys.isJumping = false;
                         keyBKeys.isKnifeAttack = false;
                         keyBKeys.isFireAttack = false;
+
+                        assetLoader.sounds.fireShot.pause();
                 }
 
                 if( keyCode === 90 ) {
@@ -1295,10 +1352,12 @@
             
             if( keyBKeys.leftRun == false && keyBKeys.rightRun == true ) {
                 this.fireRightSprite.update();
+                
             }
             
             if( keyBKeys.leftRun == true && keyBKeys.rightRun == false ) {
                 this.fireLeftSprite.update();
+
             }
         }
 
@@ -1465,6 +1524,10 @@
         gameLevel.currentLevel = levelObj["level"+levelCnt];
         //console.log(gameLevel.currentLevel);
         animate();
+        assetLoader.sounds.bg.currentTime = 0;
+                        assetLoader.sounds.bg.loop = true;
+                        assetLoader.sounds.bg.play();
+
     }
     //Loading All Images
     assetLoader.downloadAll();
